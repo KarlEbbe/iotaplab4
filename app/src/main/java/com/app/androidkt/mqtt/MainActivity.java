@@ -23,8 +23,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+
         pahoMqttClient = new PahoMqttClient();
 
         textMessage = (EditText) findViewById(R.id.textMessage);
@@ -33,9 +36,12 @@ public class MainActivity extends AppCompatActivity {
         subscribe = (Button) findViewById(R.id.subscribe);
         unSubscribe = (Button) findViewById(R.id.unSubscribe);
 
-        subscribeTopic = (EditText) findViewById(R.id.subscribeTopic);
-        unSubscribeTopic = (EditText) findViewById(R.id.unSubscribeTopic);
+        //subscribeTopic = (EditText) findViewById(R.id.subscribeTopic);
+        //unSubscribeTopic = (EditText) findViewById(R.id.unSubscribeTopic);
+
         client = pahoMqttClient.getMqttClient(getApplicationContext(), Constants.MQTT_BROKER_URL, Constants.CLIENT_ID);
+
+
 
         publishMessage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
                 String msg = textMessage.getText().toString().trim();
                 if (!msg.isEmpty()) {
                     try {
-                        pahoMqttClient.publishMessage(client, msg, 1, Constants.PUBLISH_TOPIC);
+                        pahoMqttClient.publishMessage(client, msg, 1, Constants.GREET_SUBSCRIBE_TOPIC);
                     } catch (MqttException e) {
                         e.printStackTrace();
                     } catch (UnsupportedEncodingException e) {
@@ -56,16 +62,11 @@ public class MainActivity extends AppCompatActivity {
         subscribe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String topic = subscribeTopic.getText().toString().trim();
-                if (!topic.isEmpty()) {
-                    try {
-                        pahoMqttClient.subscribe(client, topic, 1);
-                    } catch (MqttException e) {
-                        e.printStackTrace();
-                    }
-                }
+//                String topic = subscribeTopic.getText().toString().trim();
+                pahoMqttClient.startListenForGreet(client);
             }
         });
+
         unSubscribe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,5 +83,11 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent(MainActivity.this, MqttMessageService.class);
         startService(intent);
+
+       // startListenForGreet();
     }
+
+
+
+
 }

@@ -21,6 +21,7 @@ public class MqttMessageService extends Service {
     private static final String TAG = "MqttMessageService";
     private PahoMqttClient pahoMqttClient;
     private MqttAndroidClient mqttAndroidClient;
+    private String currentTopic = Constants.GREET_SUBSCRIBE_TOPIC;
 
     public MqttMessageService() {
     }
@@ -45,7 +46,17 @@ public class MqttMessageService extends Service {
 
             @Override
             public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
-                setMessageNotification(s, new String(mqttMessage.getPayload()));
+                String message = new String(mqttMessage.toString());
+                //setMessageNotification(s, new String(mqttMessage.getPayload()));
+                if(!message.equals("Unsubscribe") && currentTopic == Constants.GREET_SUBSCRIBE_TOPIC) {
+                    pahoMqttClient.subscribe(mqttAndroidClient, message, 1);
+                    pahoMqttClient.unSubscribe(mqttAndroidClient,currentTopic);
+                    currentTopic = message;
+                }else if (message.equals("Unsubscribe")){
+                    pahoMqttClient.subscribe(mqttAndroidClient, Constants.GREET_SUBSCRIBE_TOPIC, 1);
+                    pahoMqttClient.unSubscribe(mqttAndroidClient,currentTopic);
+                    currentTopic = Constants.GREET_SUBSCRIBE_TOPIC;
+                }
             }
 
             @Override

@@ -78,8 +78,8 @@ public class PahoMqttClient {
         mqttConnectOptions.setCleanSession(false);
         mqttConnectOptions.setAutomaticReconnect(true);
         //mqttConnectOptions.setWill(Constants.PUBLISH_TOPIC, "I am going offline".getBytes(), 1, true);
-        mqttConnectOptions.setUserName("ampkdogb");
-        mqttConnectOptions.setPassword("hIUzOtlaVFMH".toCharArray());
+        mqttConnectOptions.setUserName(Constants.CLIENT_USER);
+        mqttConnectOptions.setPassword(Constants.CLIENT_PASSWORD.toCharArray());
         return mqttConnectOptions;
     }
 
@@ -126,6 +126,24 @@ public class PahoMqttClient {
                 Log.e(TAG, "UnSubscribe Failed " + topic);
             }
         });
+    }
+
+    public void startListenForGreet(MqttAndroidClient client){
+        try {
+            subscribe(client, Constants.GREET_SUBSCRIBE_TOPIC, 1);
+        } catch (MqttException e) {
+            System.out.println("Could not subscribe to " + Constants.GREET_SUBSCRIBE_TOPIC);
+            e.printStackTrace();
+        }
+    }
+
+    public void stopListenForGreet(MqttAndroidClient client){
+        try {
+            unSubscribe(client, Constants.GREET_SUBSCRIBE_TOPIC);
+        } catch (MqttException e) {
+            System.out.println("Could not unsubscribe to " + Constants.GREET_SUBSCRIBE_TOPIC);
+            e.printStackTrace();
+        }
     }
 
 }
